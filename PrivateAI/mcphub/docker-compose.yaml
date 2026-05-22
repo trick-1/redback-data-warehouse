@@ -1,0 +1,31 @@
+services:
+  mcphub:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        HTTP_PROXY: ${MCPHUB_HTTP_PROXY}
+        HTTPS_PROXY: ${MCPHUB_HTTPS_PROXY}
+        NO_PROXY: ${MCPHUB_NO_PROXY}
+        http_proxy: ${MCPHUB_HTTP_PROXY}
+        https_proxy: ${MCPHUB_HTTPS_PROXY}
+        no_proxy: ${MCPHUB_NO_PROXY}
+    image: samanhappy/mcphub
+    ports:
+      - "3003:3000"
+    volumes:
+      - ./mcp_settings.json:/app/mcp_settings.json
+      - ./entrypoint-proxy.sh:/app/entrypoint-proxy.sh:ro
+      - ./proxychains.conf:/etc/proxychains.conf:ro
+      - ./repo_scan_job_mcp.js:/app/repo_scan_job_mcp.js:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/redback/repos:/repos
+    environment:
+      - HTTP_PROXY=${HTTP_PROXY}
+      - HTTPS_PROXY=${HTTPS_PROXY}
+      - NO_PROXY=${NO_PROXY}
+    restart: unless-stopped
+    extra_hosts:
+      - "proxy1.it.deakin.edu.au:10.137.0.162"
+    entrypoint: ["/app/entrypoint-proxy.sh"]
+    command: ["pnpm","start"]

@@ -1,0 +1,88 @@
+version: "3.9"
+
+services:
+  openwebui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: openwebui
+    expose:
+      - "8080"                           # expose instead of ports (Caddy will proxy)
+    volumes:
+      - ./data:/app/backend/data
+        #- ./caddy/certs/local.crt:/etc/ssl/certs/ca-certificates.crt:ro
+    environment:
+      - WEBUI_AUTH=true
+      - SAFE_MODE=true
+      - ENABLE_COMMUNITY_SHARING=false
+      - OPENAI_API_BASE_URL=http://10.137.17.254:9443/v1
+      - OPENAI_API_KEY=$LOCALAI_API_KEY
+      - HTTP_PROXY=${HTTP_PROXY}
+      - HTTPS_PROXY=${HTTPS_PROXY}
+      - NO_PROXY=localhost,127.0.0.1,::1,10.137.17.254
+      - ENABLE_LOGIN_FORM=true
+      - ENABLE_SIGNPUT=true
+      - ENABLE_OIDC=true
+      - ENABLE_LDAP=false
+        #- REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+        #- SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
+
+      # Proxy + session behaviour
+      - TRUST_PROXY_HEADERS=true
+      - COOKIE_SECURE=true               # HTTPS is now enabled via Caddy
+      - SESSION_COOKIE_SAMESITE=Lax
+
+      # Public URL of OpenWebUI
+      - WEBUI_URL=https://10.137.17.254/
+
+      # OAuth / Microsoft Entra
+      - ENABLE_OAUTH_SIGNUP=true
+      - ENABLE_OAUTH_PERSISTENT_CONFIG=false
+      - OAUTH_MERGE_ACCOUNTS_BY_EMAIL=true
+      - OAUTH_UPDATE_PICTURE_ON_LOGIN=true
+      - OAUTH_MICROSOFT_ENABLED=true
+      - OAUTH_SCOPES=["openid", "profile","email"]
+      - MICROSOFT_CLIENT_ID=${MICROSOFT_CLIENT_ID}
+      - MICROSOFT_CLIENT_SECRET=${MICROSOFT_CLIENT_SECRET}
+      - MICROSOFT_CLIENT_TENANT_ID=${MICROSOFT_CLIENT_TENANT_ID}
+      - MICROSOFT_REDIRECT_URI=https://10.137.17.254/oauth/microsoft/callback
+      - OPENID_PROVIDER_URL=https://login.microsoftonline.com/secret/v2.0    # required for logout
+      #- OPENID_PROVIDER_URL=https://login.microsoftonline.com/${MICROSOFT_CLIENT_TENANT_ID}/v2.0
+      - ENABLE_OAUTH_WITHOUT_EMAIL=true #this is a work around and breaks things like password reset and trusts that microsoft sub is stable which it normally isn't
+      - OAUTH_EMAIL_CLAIM=preferred_username
+      - OAUTH_PICTURE_CLAIM=picture
+
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "proxy1.it.deakin.edu.au:10.137.0.162"
+    networks:
+      - web
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:latest
+    container_name: caddy
+    ports:
+      - "3000:443"
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - ./caddy/caddy_data:/data
+      - ./caddy/caddy_config:/config
+      - ./caddy/certs:/etc/caddy/certs:ro   # <— add this
+    environment:
+      #- HTTP_PROXY=${HTTP_PROXY}
+      #- HTTPS_PROXY=${HTTPS_PROXY}
+      - NO_PROXY=localhost,127.0.0.1,::1,10.137.17.254,openwebui
+    networks:
+      - web
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "proxy1.it.deakin.edu.au:10.137.0.162"
+networks:
+  web:
+
+volumes:
+  caddy_data:
+  caddy_config:
+  data:

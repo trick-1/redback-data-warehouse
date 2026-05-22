@@ -1,0 +1,86 @@
+services:
+  localai:
+    container_name: local-ai
+    hostname: localai
+    image: localai/localai:latest-gpu-nvidia-cuda-12
+    restart: unless-stopped
+    ports:
+      - 4000:8080
+        #network_mode: host
+    runtime: nvidia
+    deploy: {}
+
+    # Compose v2:
+    gpus: all
+
+    environment:
+      # Keep core behaviour
+      #- LOCALAI_SINGLE_ACTIVE_BACKEND=true
+      # Outbound proxy for model/gallery downloads
+      - HTTP_PROXY=${HTTP_PROXY}
+      - HTTPS_PROXY=${HTTPS_PROXY}
+      # Don't proxy internal Docker traffic
+      - NO_PROXY=localhost,127.0.0.1,::1,localai,postgres,mcphub,mcp-hub-mcphub-1
+
+      #- BACKENDS=llama-cpp
+      #- DISABLE_BACKEND_AUTODETECT=true
+      - AUTO_LOAD_MODELS=false
+      #- AUTO_UPDATE_MODELS=true
+      - DISABLE_TELEMETRY=true
+      - HEALTHCHECKS=false
+      - DISABLE_GRAMMAR=true
+      - DISABLE_TOKENIZER_CHECKS=true
+      #- DEFAULT_MODEL=llama-3.3-70b-instruct
+      - MCP_HEADERS={"Accept":"application/json, text/event-stream"}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - DEBUG=true
+      - LOCALAI_LOG_LEVEL=debug
+      #- LOGLEVEL=trace
+      #- LOCALAI_AUTOLOAD_GALLERIES=false
+      # - LOCALAI_GALLERIES=[]
+      #- LOCALAI_DATA_PATH=/data
+      # PostgreSQL-backed knowledge base
+      - LOCALAI_AGENT_POOL_VECTOR_ENGINE=postgres
+      - LOCALAI_AGENT_POOL_DATABASE_URL=postgresql://localrecall:localrecall@postgres:5432/localrecall?sslmode=disable
+      #- LOCALAI_AGENT_POOL_DEFAULT_MODEL=hermes-3-llama3.1-8b-lorablated
+      # disabled this and nominated gemma4 so that we don't double up on models that are running, save some GPU memory
+      - LOCALAI_AGENT_POOL_DEFAULT_MODEL=gemma-4-e4b-it
+      - LOCALAI_AGENT_POOL_EMBEDDING_MODEL=granite-embedding-107m-multilingual
+      - LOCALAI_AGENT_POOL_ENABLE_SKILLS=true
+      - LOCALAI_AGENT_POOL_ENABLE_LOGS=true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
+    volumes:
+      - /opt/redback/privateai/volumes/models:/models:cached
+      - /opt/redback/privateai/volumes/images/:/tmp/generated/images/
+      - /opt/redback/privateai/volumes/backends:/usr/share/localai/backends
+      - /opt/redback/privateai/volumes/localai_data:/data
+      - /opt/redback/privateai/volumes/localai_config:/etc/localai
+
+
+      # Make libcuda visible to backends that overwrite LD_LIBRARY_PATH:
+      #- /usr/lib/x86_64-linux-gnu/libcuda.so.1:/backends/cuda12-stablediffusion-ggml/lib/libcuda.so.1:ro
+      #- /usr/lib/x86_64-linux-gnu/libcuda.so.1:/backends/cuda12-llama-cpp/lib/libcuda.so.1:ro
+      #
+      #
+
+  postgres:
+    image: quay.io/mudler/localrecall:v0.5.2-postgresql
+    environment:
+      - POSTGRES_DB=localrecall
+      - POSTGRES_USER=localrecall
+      - POSTGRES_PASSWORD=localrecall
+
+      # Runtime: don't force HTTP(S)_PROXY, just no-proxy for internal services
+      - NO_PROXY=localhost,127.0.0.1,::1,localai,postgres,mcphub,mcp-hub-mcphub-1
+    volumes:
+      - /opt/redback/privateai/volumes/localai_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U localrecall"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

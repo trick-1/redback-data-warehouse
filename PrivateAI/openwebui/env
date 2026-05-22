@@ -1,0 +1,7 @@
+HTTP_PROXY=http://proxy1.it.deakin.edu.au:3128
+HTTPS_PROXY=http://proxy1.it.deakin.edu.au:3128
+MICROSOFT_CLIENT_ID=insertoauthclientid # Microsoft OAuth client ID
+MICROSOFT_CLIENT_TENANT_ID=insertoauthclientsecret # Microsoft OAuth client secret
+MICROSOFT_CLIENT_SECRET=nserttenantid # Microsoft tenant ID - use 9188040d-6c67-4c5b-b112-36a304b66dad for personal accounts
+	          
+LOCALAI_API_KEY=sk-fromthelocalaienvfile

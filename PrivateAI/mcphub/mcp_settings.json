@@ -1,0 +1,376 @@
+{
+  "mcpServers": {
+    "amap": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@amap/amap-maps-mcp-server"
+      ],
+      "env": {
+        "AMAP_MAPS_API_KEY": "your-api-key"
+      }
+    },
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest",
+        "--headless"
+      ]
+    },
+    "fetch": {
+      "command": "uvx",
+      "args": [
+        "mcp-server-fetch"
+      ]
+    },
+    "slack": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-slack"
+      ],
+      "env": {
+        "SLACK_BOT_TOKEN": "your-bot-token",
+        "SLACK_TEAM_ID": "your-team-id"
+      }
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ],
+      "env": {}
+    },
+    "time": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "mcp-server-time"
+      ]
+    },
+    "mindmap": {
+      "command": "uvx",
+      "args": [
+        "mindmap-mcp-server",
+        "--return-type",
+        "html"
+      ],
+      "env": {}
+    },
+    "playwright-mcp": {
+      "enabled": true,
+      "owner": "admin",
+      "type": "streamable-http",
+      "url": "https://mcprouter.to/playwright",
+      "headers": {
+        "Authorization": "Bearer sk-pXifB638NUdO07Y1QXqKjuLuQJ7eDVb30fjuJXH14k8aC",
+        "HTTP-Referer": "https://www.mcphubx.com",
+        "X-Title": "MCPHub"
+      },
+      "enableKeepAlive": false
+    },
+    "fetch-mcp": {
+      "enabled": true,
+      "owner": "admin",
+      "type": "streamable-http",
+      "url": "https://mcprouter.to/fetch",
+      "headers": {
+        "Authorization": "Bearer sk-pXifB638NUdO07Y1QXqKjuLuQJ7eDVb30fjuJXH14k8aC",
+        "HTTP-Referer": "https://www.mcphubx.com",
+        "X-Title": "MCPHub"
+      },
+      "enableKeepAlive": false
+    },
+    "time-mcp": {
+      "enabled": true,
+      "owner": "admin",
+      "type": "streamable-http",
+      "url": "https://mcprouter.to/time",
+      "headers": {
+        "Authorization": "Bearer sk-pXifB638NUdO07Y1QXqKjuLuQJ7eDVb30fjuJXH14k8aC",
+        "HTTP-Referer": "https://www.mcphubx.com",
+        "X-Title": "MCPHub"
+      },
+      "enableKeepAlive": false
+    },
+    "mongodb": {
+      "enabled": false,
+      "owner": "admin",
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-mongo-server",
+        "mongodb://oliver:uKQbTX8ebb1zGVFy@ac-qpakc5i-shard-00-00.cvmjitc.mongodb.net:27017,ac-qpakc5i-shard-00-01.cvmjitc.mongodb.net:27017,ac-qpakc5i-shard-00-02.cvmjitc.mongodb.net:27017/?ssl=true&replicaSet=atlas-xxxxxx-shard-0&authSource=admin&retryWrites=true&w=majority"
+      ],
+      "env": {},
+      "type": "stdio"
+    },
+    "git-mcp-server": {
+      "enabled": true,
+      "type": "stdio",
+      "command": "sh",
+      "volumes": "/opt/redback/repos:/repos",
+      "args": [
+        "-c",
+        "cd /repos && npx @cyanheads/git-mcp-server@latest"
+      ],
+      "env": {
+        "MCP_TRANSPORT_TYPE": "stdio",
+        "MCP_LOG_LEVEL": "info",
+        "GIT_BASE_DIR": "/repos",
+        "LOGS_DIR": "/repos/logs/git-mcp-server/",
+        "GIT_USERNAME": "cyanheads",
+        "GIT_EMAIL": "casey@caseyjhand.com",
+        "GIT_SIGN_COMMITS": "true"
+      }
+    },
+    "repo-security-scan": {
+      "enabled": true,
+      "owner": "admin",
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "/app/repo_scan_job_mcp.js"
+      ],
+      "env": {
+        "REPOS_BASE_DIR": "/repos",
+        "HOST_REPOS_BASE_DIRE": "/opt/redback/repos",
+        "SEMGREP_IMAGE": "semgrep/semgrep:latest",
+        "HTTP_PROXY": "${HTTP_PROXY}",
+        "HTTPS_PROXY": "${HTTPS_PROXY}",
+        "NO_PROXY": "localhost,127.0.0.1,::1,proxy1.it.deakin.edu.au,10.137.0.162,api.mcprouter.to,10.137.17.254",
+        "SCAN_TIMEOUT_MS": "50000",
+        "SEMGREP_JOBS": "2",
+        "SEMGREP_PER_FILE_TIMEOUT": "2",
+        "SEMGREP_TIMEOUT_THRESHOLD": "1",
+        "SEMGREP_MAX_TARGET_BYTES": "500000",
+        "JOB_RETENTION_LIMIT": "100"
+      }
+    },
+    "redback-docs": {
+      "type": "streamable-http",
+      "url": "http://redback-mcp:4045/mcp",
+      "headers": {
+        "Authorization": "Bearer 98bb99ab7db3f86cdaba0276c9b913890cacfa92fa7514a01a52c3792d1753e3"
+      },
+      "owner": "admin",
+      "enabled": true
+    },
+    "wazuh": {
+      "type": "streamable-http",
+      "url": "http://10.137.17.254:4040/mcp",
+      "headers": {
+        "0": "Authorization: Bearer wazuh_fvyWJIFCBEZq9X-MfcASaLUFKxp2Vt044dxw-Z5ZXLA"
+      },
+      "owner": "admin"
+    },
+    "arxiv-mcp": {
+      "enabled": true,
+      "owner": "admin",
+      "command": "uv",
+      "args": [
+        "tool",
+        "run",
+        "arxiv-mcp-server",
+        "--storage-path",
+        "/ops/redback/privateai/papers"
+      ],
+      "env": {}
+    },
+    "postgresql": {
+      "enabled": true,
+      "owner": "julio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "postgresql://redback:R3dbAck_DB2025@172.22.0.1:5432/redbackdb"
+      ],
+      "env": {},
+      "type": "stdio"
+    },
+    "supabase-postgres": {
+      "enabled": true,
+      "owner": "sandy",
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "postgresql://postgres.redback:18466fc1d9de730c3619de31d9649f91@10.137.17.254:15432/postgres"
+      ]
+    }
+  },
+  "users": [
+    {
+      "username": "admin",
+      "password": "$2b$10$7hXN7MdB0r9wi1KKHEV1JuKOrJWN1nzf21FKWRSsVB82FVR/WYASm",
+      "isAdmin": true
+    },
+    {
+      "username": "sandy",
+      "password": "$2b$10$yhpzCBHt4AWLLkJEddK1DuvWbvJPfEAlSYG.AqugUPTlEl2jacyDm",
+      "isAdmin": true
+    },
+    {
+      "username": "julio",
+      "password": "$2b$10$jUv6cbIQ1/QFJOEHtIxgre/msgfxjOsHiHdXFS4qRkjMew5PDry3O",
+      "isAdmin": true
+    },
+    {
+      "username": "isurangi@redbackops.com",
+      "password": "$2b$10$L/WFdU8DRybmY9PbltndB.zV133Ss78pMlpdrh0.L976fOufynnl2",
+      "isAdmin": true
+    }
+  ],
+  "systemConfig": {
+    "routing": {
+      "enableGlobalRoute": true,
+      "enableGroupNameRoute": true,
+      "enableBearerAuth": true,
+      "bearerAuthKey": "EKEGFKWAAiJsFqiCfEfi6BXNMv3MioWv"
+    },
+    "install": {
+      "pythonIndexUrl": "",
+      "npmRegistry": "",
+      "baseUrl": "http://10.137.17.254:3003/"
+    },
+    "smartRouting": {
+      "enabled": false,
+      "dbUrl": "",
+      "openaiApiBaseUrl": "",
+      "openaiApiKey": "",
+      "openaiApiEmbeddingModel": ""
+    },
+    "oauthServer": {
+      "enabled": true,
+      "accessTokenLifetime": 3600,
+      "refreshTokenLifetime": 1209600,
+      "authorizationCodeLifetime": 300,
+      "requireClientSecret": false,
+      "allowedScopes": [
+        "read",
+        "write"
+      ],
+      "requireState": false,
+      "dynamicRegistration": {
+        "enabled": true,
+        "allowedGrantTypes": [
+          "authorization_code",
+          "refresh_token"
+        ],
+        "requiresAuthentication": false
+      }
+    },
+    "mcpRouter": {
+      "apiKey": "sk-pXifB638NUdO07Y1QXqKjuLuQJ7eDVb30fjuJXH14k8aC",
+      "referer": "https://www.mcphubx.com",
+      "title": "MCPHub",
+      "baseUrl": "https://api.mcprouter.to/v1"
+    }
+  },
+  "providers": [
+    {
+      "id": "localai-1",
+      "name": "LocalAI (LLaMA3)",
+      "base_url": "http://192.168.8.96:8080/v1",
+      "models": [
+        "phi-4",
+        "mistral-10b",
+        "gemma-7b-it"
+      ],
+      "type": "openai",
+      "tags": [
+        "localai",
+        "gpu",
+        "q4_K"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": "4dd61db1-20df-4219-b3c6-174c5319e6c9",
+      "owner": "admin",
+      "name": "User",
+      "description": "",
+      "servers": [
+        {
+          "name": "amap",
+          "tools": "all"
+        },
+        {
+          "name": "playwright",
+          "tools": "all"
+        },
+        {
+          "name": "fetch",
+          "tools": "all"
+        },
+        {
+          "name": "sequential-thinking",
+          "tools": "all"
+        },
+        {
+          "name": "time",
+          "tools": "all"
+        },
+        {
+          "name": "mindmap",
+          "tools": "all"
+        },
+        {
+          "name": "playwright-mcp",
+          "tools": "all"
+        },
+        {
+          "name": "fetch-mcp",
+          "tools": "all"
+        },
+        {
+          "name": "time-mcp",
+          "tools": "all"
+        },
+        {
+          "name": "mongodb",
+          "tools": "all"
+        },
+        {
+          "name": "git-mcp-server",
+          "tools": "all"
+        },
+        {
+          "name": "repo-security-scan",
+          "tools": "all"
+        },
+        {
+          "name": "arxiv-mcp",
+          "tools": "all"
+        },
+        {
+          "name": "wazuh",
+          "tools": "all"
+        },
+        {
+          "name": "postgresql",
+          "tools": "all"
+        },
+        {
+          "name": "supabase-postgres",
+          "tools": "all"
+        }
+      ]
+    }
+  ],
+  "bearerKeys": [
+    {
+      "id": "685fe4e3-6442-4a04-96cf-267058928161",
+      "name": "default",
+      "token": "EKEGFKWAAiJsFqiCfEfi6BXNMv3MioWv",
+      "enabled": true,
+      "accessType": "all",
+      "allowedGroups": [],
+      "allowedServers": []
+    }
+  ]
+}

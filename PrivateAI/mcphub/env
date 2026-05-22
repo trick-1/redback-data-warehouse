@@ -1,0 +1,6 @@
+MCPHUB_HTTP_PROXY=http://proxy1.it.deakin.edu.au:3128
+MCPHUB_HTTPS_PROXY=http://proxy1.it.deakin.edu.au:3128
+MCPHUB_NO_PROXY=localhost,127.0.0.1,::1,mcphub,proxy1.it.deakin.edu.au,10.137.0.162,api.mcprouter.to,10.137.17.254,mcp-hub-mcphub-1
+mcphub_http_proxy=http://proxy1.it.deakin.edu.au:3128
+mcphub_https_proxy=http://proxy1.it.deakin.edu.au:3128
+mcphub_no_proxy=localhost,127.0.0.1,::1,mcphub,proxy1.it.deakin.edu.au,10.137.0.162,api.mcprouter.to,10.137.17.254,mcp-hub-mcphub-1

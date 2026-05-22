@@ -1,0 +1,16 @@
+services:
+  semgrep-mcp:
+    image: returntocorp/semgrep:latest
+    command: ["semgrep", "mcp", "-t", "streamable-http", "-p", "4004"]
+    environment:
+      - FASTMCP_HOST=0.0.0.0
+      - SEMGREP_ENABLE_VERSION_CHECK=0
+      - HTTP_PROXY=${HTTP_PROXY}
+      - HTTPS_PROXY=${HTTPS_PROXY}
+      - NO_PROXY=localhost,127.0.0.1,::1,proxy1.it.deakin.edu.au,10.137.0.162,api.mcprouter.to
+    volumes:
+      - /opt/redback/repos:/repos:ro
+    working_dir: /repos
+    ports:
+      - "4004:4004"
+    restart: unless-stopped

@@ -1,0 +1,7 @@
+HTTP_PROXY=http://proxy1.it.deakin.edu.au:3128
+HTTPS_PROXY=http://proxy1.it.deakin.edu.au:3128
+
+LOCALAI_API_KEY=sk-changethistobethelocalaiapikeyforclients
+MODEL_NAME=gemma-3-4b-it-qat
+MULTIMODAL_MODEL=moondream2-20250414
+IMAGE_MODEL=sd-1.5-ggml

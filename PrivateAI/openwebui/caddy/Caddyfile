@@ -1,0 +1,16 @@
+{
+    # Turn off auto HTTPS completely
+    auto_https off
+}
+
+# HTTP → redirect to HTTPS
+:80 {
+    redir https://10.137.17.254{uri}
+}
+
+# HTTPS with our self-signed cert
+:443 {
+    tls /etc/caddy/certs/local.crt /etc/caddy/certs/local.key
+
+    reverse_proxy http://openwebui:8080
+}
