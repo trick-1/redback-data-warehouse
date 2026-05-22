@@ -1,0 +1,1 @@
+ ./containermig.sh   --dest-host 10.137.17.254   --dest-user ejb   --dest-base /opt/redback/ejb   --sync-data   --csv mig.csv   --include-writable-layer   --sync-compose-files   --sync-build-context   --verbose --replace-file replacements.txt

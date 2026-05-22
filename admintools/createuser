@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Usage:
+#   sudo ./create_user.sh username
+#
+# Example:
+#   sudo ./create_user.sh richard
+
+if [[ "${EUID}" -ne 0 ]]; then
+  echo "Please run as root or with sudo."
+  exit 1
+fi
+
+if [[ $# -ne 1 ]]; then
+  echo "Usage: $0 <username>"
+  exit 1
+fi
+
+USERNAME="$1"
+
+# Basic username validation
+if [[ ! "$USERNAME" =~ ^[a-z_][a-z0-9_-]*$ ]]; then
+  echo "Invalid username: $USERNAME"
+  echo "Use lowercase letters, numbers, underscores, and hyphens only."
+  exit 1
+fi
+
+# Check if user already exists
+if id "$USERNAME" >/dev/null 2>&1; then
+  echo "User '$USERNAME' already exists."
+  exit 1
+fi
+
+# Ensure docker group exists
+if ! getent group docker >/dev/null 2>&1; then
+  groupadd docker
+fi
+
+# Generate a random password
+PASSWORD="$(openssl rand -base64 18 | tr -d '\n' | cut -c1-20)"
+
+# Create the user with home directory and bash shell
+adduser --disabled-password --gecos "" --shell /bin/bash "$USERNAME"
+
+# Set password
+echo "${USERNAME}:${PASSWORD}" | chpasswd
+
+# Add to docker group
+usermod -aG docker "$USERNAME"
+
+# Optional: force password change at first login
+chage -d 0 "$USERNAME"
+
+echo "----------------------------------------"
+echo "User created successfully"
+echo "Username : $USERNAME"
+echo "Password : $PASSWORD"
+echo "Home dir : /home/$USERNAME"
+echo "Groups   : $(id -nG "$USERNAME")"
+echo "----------------------------------------"
+echo "They will be asked to change their password at first login."

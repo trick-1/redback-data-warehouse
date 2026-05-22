@@ -1,0 +1,6 @@
+container,include_writable_layer,stop_container
+airflow,false,false
+kafka,false,false
+kafka-ui,false,false
+mongodb,false,false
+nginx.modsecurity,false,false

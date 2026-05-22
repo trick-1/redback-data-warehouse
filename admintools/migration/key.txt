@@ -1,0 +1,5 @@
+no named volumes
+no hidden container data
+everything bind-mounted
+everything visible on disk
+everything reproducible
